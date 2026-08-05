@@ -1,10 +1,10 @@
 import unittest
-from  import 
+from htmlnode import HTMLNode
 
 
-class TestTextNode(unittest.TestCase):
-    def test_eq(self):
-        node = TextNode("This is a text node", TextType.BOLD)
+class TestHTMLNode(unittest.TestCase):
+    def test_html_node(self):
+        node = HTMLNode("h1", "Title", {class: chapter})
         node2 = TextNode("This is a text node", TextType.BOLD)
         self.assertEqual(node, node2)
 
