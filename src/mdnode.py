@@ -7,6 +7,19 @@ def split_nodes_delimiter(old_nodes: list[TextNode], delimiter: str, text_type: 
         if not node.text_type.TEXT:
             new_nodes.extend(node)
 
-        if 
+        if node.text.count(delimiter) % 2 != 0:
+            raise Exception(f"{delimiter} was not closed")
+
+        text_split: list = node.text.split(delimiter, maxsplit=2)
+        new_nodes.append(TextNode(text_split[0], TextType.TEXT))
+
+        match delimiter:
+            case "**":
+                new_nodes.append(TextNode(text_split[1], TextType.BOLD))
+            case "_":
+                new_nodes.append(TextNode(text_split[1], TextType.ITALIC))
+            case "`":
+                new_nodes.append(TextNode(text_split[1], TextType.CODE))
+
 
     return new_nodes
