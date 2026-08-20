@@ -1,6 +1,6 @@
 import unittest
 from textnode import TextNode, TextType
-from mdnode import split_nodes_delimiter
+from inline_markdown import split_nodes_delimiter
 
 nodes = [TextNode("`text` **bold** _italic_", TextType.TEXT),
             TextNode("**Hallo** _Welt_ und `code`", TextType.TEXT),
