@@ -15,14 +15,12 @@ def split_nodes_delimiter(
             raise Exception(f"{delimiter} was not closed")
 
         text_split: list = node.text.split(delimiter)
-        new_nodes.append(TextNode(text_split[0], TextType.TEXT))
 
-        match delimiter:
-            case "**":
-                new_nodes.append(TextNode(text_split[1], TextType.BOLD))
-            case "_":
-                new_nodes.append(TextNode(text_split[1], TextType.ITALIC))
-            case "`":
-                new_nodes.append(TextNode(text_split[1], TextType.CODE))
+        for index in range(0, len(text_split)):
+            if text_split[index] != "":
+                if index % 2 != 0:
+                    new_nodes.append(TextNode(text_split[index], text_type))
+                else:
+                    new_nodes.append(TextNode(text_split[index], TextType.TEXT))
 
     return new_nodes
