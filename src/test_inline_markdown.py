@@ -1,47 +1,30 @@
 import unittest
-from textnode import TextNode, TextType
-from inline_markdown import split_nodes_delimiter
+from inline_markdown import extract_markdown_images, extract_markdown_links
 
-nodes = [TextNode("`text` **bold** _italic_", TextType.TEXT),
-            TextNode("**Hallo** _Welt_ und `code`", TextType.TEXT),
-            TextNode("Normaler Text mit **fett**, _kursiv_ und `inline code`.", TextType.TEXT),
-            TextNode("nur normaler Text", TextType.TEXT)
-]
-class TestMdNode(unittest.TestCase):
-    def test_bold(self):
-        self.assertEqual(split_nodes_delimiter(nodes, "**", TextType.BOLD), [
-            TextNode("`text` ", TextType.TEXT),
-            TextNode("bold", TextType.BOLD),
-            TextNode(" _italic_", TextType.TEXT),
-            TextNode("Hallo", TextType.BOLD),
-            TextNode(" _Welt_ und `code`", TextType.TEXT),
-            TextNode("Normaler Text mit ", TextType.TEXT),
-            TextNode("fett", TextType.BOLD),
-            TextNode(", _kursiv_ und `inline code`.", TextType.TEXT),
-            TextNode("nur normaler Text", TextType.TEXT)
-        ])
+class TestLinkExtraction(unittest.TestCase):
 
-    def test_italic(self):
-        self.assertEqual(split_nodes_delimiter(nodes, "_", TextType.ITALIC), [
-            TextNode("`text` **bold** ", TextType.TEXT),
-            TextNode("italic", TextType.ITALIC),
-            TextNode("**Hallo** ", TextType.TEXT),
-            TextNode("Welt", TextType.ITALIC),
-            TextNode(" und `code`", TextType.TEXT),
-            TextNode("Normaler Text mit **fett**, ", TextType.TEXT),
-            TextNode("kursiv", TextType.ITALIC),
-            TextNode(" und `inline code`.", TextType.TEXT),
-            TextNode("nur normaler Text", TextType.TEXT)
-        ])
+    def test_image(self):
+        sample: list[tuple] = [("image description", "http://localhost/images/picture.png")]
+        test = "random text ![image description](http://localhost/images/picture.png) some other text"
+        self.assertEqual(extract_markdown_images(test), sample)
 
-    def test_code(self):
-        self.assertEqual(split_nodes_delimiter(nodes, "`", TextType.CODE), [
-            TextNode("text", TextType.CODE),
-            TextNode(" **bold** _italic_", TextType.TEXT),
-            TextNode("**Hallo** _Welt_ und ", TextType.TEXT),
-            TextNode("code", TextType.CODE),
-            TextNode("Normaler Text mit **fett**, _kursiv_ und ", TextType.TEXT),
-            TextNode("inline code", TextType.CODE),
-            TextNode(".", TextType.TEXT),
-            TextNode("nur normaler Text", TextType.TEXT)
-        ])
+        test = "random! tex[t ![image description](http://localhost/images/picture.png) (some o)ther t]ext"
+        self.assertEqual(extract_markdown_images(test), sample)
+
+    def test_link(self):
+        sample: list[tuple] = [("link text", "http://google.com/content/index.html")]
+        test = "random text [link text](http://google.com/content/index.html) some other text"
+        self.assertEqual(extract_markdown_links(test), sample)
+
+        test = "ra!ndom [text [link text](http://google.com/content/index.html) ]some ot(her )text"
+        self.assertEqual(extract_markdown_links(test), sample)
+
+    def test_images(self):
+        sample: list[tuple] = [("image description", "http://localhost/images/picture.png"), ("second image description", "http://localhost/images/picture2.png")]
+        test = "random text ![image description](http://localhost/images/picture.png) some other text random! tex[t ![second image description](http://localhost/images/picture2.png) (some o)ther t]ext"
+        self.assertEqual(extract_markdown_images(test), sample)
+
+    def test_links(self):
+        sample: list[tuple] = [("link text", "http://google.com/content/index.html"), ("second link text", "http://google.com/content/index2.html")]
+        test = "random text [link text](http://google.com/content/index.html) some other text ra!ndom [text [second link text](http://google.com/content/index2.html) ]some ot(her )text"
+        self.assertEqual(extract_markdown_links(test), sample)
