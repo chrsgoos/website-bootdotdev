@@ -92,3 +92,4 @@ def text_to_textnodes(text: str) -> list[TextNode]:
     textnodes = split_nodes_delimiter(textnodes, "`", TextType.CODE)
     textnodes = split_nodes_image(textnodes)
     textnodes = split_nodes_link(textnodes)
+    return textnodes
