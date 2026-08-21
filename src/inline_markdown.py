@@ -38,19 +38,6 @@ def split_nodes_image(old_nodes: list[TextNode]) -> list[TextNode]:
 
         new_nodes.extend(build_node_list(text, images, TextType.IMAGE))
         
-        """
-        for image in images:
-            sections = text.split(f"![{image[0]}]({image[1]})", 1)
-            
-            if sections[0] != "":
-                new_nodes.append(TextNode(sections[0], TextType.TEXT))
-            new_nodes.append(TextNode(image[0], TextType.IMAGE, image[1]))
-            text = sections[1]
-
-        if text != "":
-            new_nodes.append(TextNode(text, TextType.TEXT))
-        """
-
     return new_nodes
 
 
@@ -67,19 +54,6 @@ def split_nodes_link(old_nodes: list[TextNode]) -> list[TextNode]:
 
         new_nodes.extend(build_node_list(text, links, TextType.LINK))
         
-        """
-        for link in links:
-            sections = text.split(f"![{link[0]}]({link[1]})", 1)
-            
-            if sections[0] != "":
-                new_nodes.append(TextNode(sections[0], TextType.TEXT))
-            new_nodes.append(TextNode(link[0], TextType.LINK, link[1]))
-            text = sections[1]
-
-        if text != "":
-            new_nodes.append(TextNode(text, TextType.TEXT))
-        """
-
     return new_nodes
 
 def extract_markdown_images(text: str) -> list[tuple[str, str]]:
@@ -110,3 +84,11 @@ def build_node_list(text: str, pairs: list[tuple], type: TextType) -> list[TextN
         nodes.append(TextNode(text, TextType.TEXT))
 
     return nodes
+
+def text_to_textnodes(text: str) -> list[TextNode]:
+    textnodes: list[TextNode] = [TextNode(text, TextType.TEXT)]
+    textnodes = split_nodes_delimiter(textnodes, "**", TextType.BOLD)
+    textnodes = split_nodes_delimiter(textnodes, "_", TextType.ITALIC)
+    textnodes = split_nodes_delimiter(textnodes, "`", TextType.CODE)
+    textnodes = split_nodes_image(textnodes)
+    textnodes = split_nodes_link(textnodes)
